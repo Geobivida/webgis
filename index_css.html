@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+    <link rel="stylesheet" href="css/qgis2web.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <title>Geobivida – Mapa Interativo</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        #sidebar {
+            width: 320px;
+            background: linear-gradient(180deg, #1e5f3f 0%, #217e56 100%);
+            color: #fff;
+            box-shadow: 2px 0 8px #0002;
+            z-index: 1001;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+        #sidebar-header {
+            width: 100%;
+            padding: 32px 0 16px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0,0,0,0.10);
+            border-bottom: 1px solid #217e56;
+        }
+        #sidebar-header img {
+            max-width: 90px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        #sidebar-header h1 {
+            font-size: 1.3em;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        #sidebar nav {
+            width: 100%;
+            margin: 28px 0 16px 0;
+        }
+        #sidebar nav ul {
+            list-style: none;
+            padding: 0 24px;
+            margin: 0;
+        }
+        #sidebar nav ul li {
+            padding: 10px 0;
+        }
+        #sidebar nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        #sidebar nav ul li a:hover {
+            color: #ffe98a;
+            text-decoration: underline;
+        }
+        #sidebar-content {
+            width: 100%;
+            padding: 0 24px 24px 24px;
+            flex: 1 1 auto;
+        }
+        #sidebar-content p {
+            color: #e3e3e3;
+            font-size: 1em;
+            margin-top: 0;
+        }
+        #map {
+            flex: 1 1 auto;
+            position: relative;
+            min-width: 0;
+            min-height: 100vh;
+        }
+        footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 30px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            line-height: 30px;
+            z-index: 9999;
+        }
+        @media (max-width: 700px) {
+            #sidebar {
+                width: 100vw;
+                position: absolute;
+                height: auto;
+                min-height: 0;
+                box-shadow: none;
+            }
+            #map {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <img src="images/logo.png" alt="Logo Geobivida">
+            <h1>Geobivida</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Sobre</a></li>
+                <li><a href="#">Camadas</a></li>
+                <li><a href="#">Contato</a></li>
+                <!-- Adicione mais itens de menu conforme necessário -->
+            </ul>
+        </nav>
+        <div id="sidebar-content">
+            <p>
+                Mapa interativo do projeto Geobivida.<br>
+                Este WebGIS apresenta dados de biodiversidade e informações ambientais para apoio à pesquisa, educação e gestão territorial.<br><br>
+                Utilize o menu para explorar as camadas, visualizar dados e acessar informações detalhadas.<br>
+                <a href="https://github.com/Geobivida/webgis" target="_blank" style="color:#ffe98a;font-weight:bold;">Saiba mais</a>
+            </p>
+        </div>
+    </div>
+    <div id="map"></div>
+    <script src="js/qgis2web_expressions.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/L.Control.Layers.Tree.min.js"></script>
+    <script src="js/leaflet.rotatedMarker.js"></script>
+    <script src="js/leaflet.pattern.js"></script>
+    <script src="js/leaflet-hash.js"></script>
+    <script src="js/Autolinker.min.js"></script>
+    <script src="js/rbush.min.js"></script>
+    <script src="js/labelgun.min.js"></script>
+    <script src="js/labels.js"></script>
+    <script src="data/Limite_Municipal_1.js"></script>
+    <script src="data/RedesSIBBr_2.js"></script>
+    <script src="data/Pontos_3.js"></script>
+    <!-- ...restante dos scripts... -->
+    <footer>
+        © 2025 Geobivida – Projeto de WebGIS de Biodiversidade
+    </footer>
+</body>
+</html>
