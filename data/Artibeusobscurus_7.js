@@ -1,0 +1,1 @@
+var json_Artibeusobscurus_7 = {"type":"FeatureCollection","name":"Artibeusobscurus_7","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"Coleta":"Floresta MABio, 2020"},"geometry":{"type":"MultiPoint","coordinates":[[-48.883666999998802,-26.232346999999887]]}}]}
