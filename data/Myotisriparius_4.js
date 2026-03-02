@@ -1,0 +1,1 @@
+var json_Myotisriparius_4 = {"type":"FeatureCollection","name":"Myotisriparius_4","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.804887860203387,-26.370864784155795]}}]}

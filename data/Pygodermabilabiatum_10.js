@@ -1,0 +1,1 @@
+var json_Pygodermabilabiatum_10 = {"type":"FeatureCollection","name":"Pygodermabilabiatum_10","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.834917356131072,-26.264189221695315]}}]}

@@ -1,0 +1,1 @@
+var json_Eptesicusbrasiliensis_7 = {"type":"FeatureCollection","name":"Eptesicusbrasiliensis_7","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.829746856158451,-26.37190273517183]}}]}

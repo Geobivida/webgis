@@ -1,0 +1,1 @@
+var json_Chirodermadoriae_14 = {"type":"FeatureCollection","name":"Chirodermadoriae_14","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.87756697160642,-26.235275895596558]}}]}

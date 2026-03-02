@@ -1,0 +1,1 @@
+var json_Noctilioleporinus_3 = {"type":"FeatureCollection","name":"Noctilioleporinus_3","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.81732680749451,-26.28464537312432]}}]}

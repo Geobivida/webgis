@@ -1,0 +1,1 @@
+var json_Artibeusplanirostris_16 = {"type":"FeatureCollection","name":"Artibeusplanirostris_16","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.833340928545383,-26.300005917784787]}}]}

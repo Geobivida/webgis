@@ -1,0 +1,1 @@
+var json_Eptesicusdiminutus_6 = {"type":"FeatureCollection","name":"Eptesicusdiminutus_6","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[-48.822399620057674,-26.308396352872677]}}]}
