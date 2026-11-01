@@ -137,7 +137,7 @@
             </div>
           </div>
 
-          <!-- MOCKUP VETORIAL (Sem os botões/cartões de métricas) -->
+          <!-- MOCKUP VETORIAL (Sem os cartões inferiores) -->
           <div class="lg:col-span-5">
             <div class="relative rounded-2xl p-1 bg-gradient-to-b from-emerald-500/30 via-emerald-800/20 to-transparent shadow-2xl">
               <div class="bg-[#051c11] rounded-[15px] p-6 border border-emerald-800/50 space-y-4">
@@ -225,7 +225,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
           
-          <!-- Controlo de Camadas -->
           <div class="lg:col-span-4 bg-[#051c11] p-5 rounded-2xl border border-emerald-900/80 flex flex-col justify-between space-y-4">
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-emerald-900/70 pb-3">
@@ -352,12 +351,11 @@
             <p class="text-emerald-200/70 text-sm leading-relaxed">Criação de visores cartográficos interativos para partilha de dados entre equipes multidisciplinares e órgãos fiscalizadores sem depender de softwares pesados.</p>
           </div>
 
-          <!-- Card 2: Coleta de Dados Bióticos -->
           <div class="bg-[#062417] p-8 rounded-2xl border border-emerald-900/60 hover:border-emerald-500/40 transition">
             <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/60 flex items-center justify-center text-emerald-400 mb-6">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
             </div>
-            <h4 class="text-xl font-bold text-white mb-3">Coleta de Dados Bióticos</h4>
+            <h4 class="text-xl font-bold text-white mb-3">Levantamento de Fauna & Flora</h4>
             <p class="text-emerald-200/70 text-sm leading-relaxed">Levantamento de flora para identificação de estágio sucessional, parcelas botânicas, inventários de fauna (quirópteros, avifauna e mastofauna) com georreferenciação rigorosa.</p>
           </div>
 
@@ -486,7 +484,6 @@
         }
       });
 
-      // Traçado perimetral de Joinville e orla estuarina da Baía da Babitonga
       const boundaryCoords = [
         [-26.1100, -48.9100], [-26.1300, -48.8100], [-26.1700, -48.7700],
         [-26.2100, -48.7400], [-26.2500, -48.7200], [-26.2900, -48.7050],
@@ -502,34 +499,24 @@
         fillOpacity: 0.04
       }).addTo(map);
 
-      // Estações ajustadas aos núcleos florestais e corredores hídricos
       const stations = [
-        // Núcleo Pirabeiraba / Zona Industrial Norte
         { lat: -26.1680, lng: -48.8820, sp: "Anoura caudifer", fam: "phyllo", guild: "Nectarívoro", local: "Pirabeiraba / Estrada Bonita" },
         { lat: -26.1950, lng: -48.8680, sp: "Chiroderma doriae", fam: "phyllo", guild: "Frugívoro", local: "Distrito Industrial Norte" },
         { lat: -26.2120, lng: -48.8750, sp: "Sturnira tildae", fam: "phyllo", guild: "Frugívoro", local: "Bacia do Rio Cubatão" },
         { lat: -26.2200, lng: -48.8500, sp: "Eptesicus brasiliensis", fam: "vesper", guild: "Insetívoro", local: "Transição Dona Francisca" },
-        
-        // Maciço Central / Morro do Finder / Boa Vista
         { lat: -26.2750, lng: -48.8280, sp: "Artibeus lituratus", fam: "phyllo", guild: "Frugívoro", local: "Morro do Finder" },
         { lat: -26.2820, lng: -48.8230, sp: "Artibeus fimbriatus", fam: "phyllo", guild: "Frugívoro", local: "Morro do Finder / Saguaçu" },
         { lat: -26.2940, lng: -48.8340, sp: "Carollia perspicillata", fam: "phyllo", guild: "Frugívoro", local: "Parque Zoobotânico" },
         { lat: -26.3010, lng: -48.8310, sp: "Sturnira lilium", fam: "phyllo", guild: "Frugívoro", local: "Morro da Boa Vista" },
         { lat: -26.2880, lng: -48.8410, sp: "Myotis nigricans", fam: "vesper", guild: "Insetívoro Aéreo", local: "Parque Zoobotânico" },
         { lat: -26.2920, lng: -48.8250, sp: "Glossophaga soricina", fam: "phyllo", guild: "Nectarívoro", local: "Encosta Leste Boa Vista" },
-
-        // Setor Oeste / Bacia do Piraí e Vila Nova
         { lat: -26.3080, lng: -48.9150, sp: "Micronycteris megalotis", fam: "phyllo", guild: "Insetívoro", local: "Mata Ciliar Vila Nova" },
         { lat: -26.2850, lng: -48.9320, sp: "Mimon bennettii", fam: "phyllo", guild: "Insetívoro / Carnívoro", local: "Estrada Comprida" },
         { lat: -26.2620, lng: -48.9100, sp: "Pygoderma bilabiatum", fam: "phyllo", guild: "Frugívoro", local: "Piraí Alto" },
         { lat: -26.3210, lng: -48.8920, sp: "Myotis riparius", fam: "vesper", guild: "Insetívoro Aéreo", local: "Bacia Hidrográfica do Piraí" },
-
-        // Setor Sul / Bacia do Cachoeira Sul
         { lat: -26.3380, lng: -48.8450, sp: "Artibeus obscurus", fam: "phyllo", guild: "Frugívoro", local: "Fragmento Florestal Sul" },
         { lat: -26.3550, lng: -48.8280, sp: "Artibeus planirostris", fam: "phyllo", guild: "Frugívoro", local: "Área de Preservação Sul" },
         { lat: -26.3450, lng: -48.8600, sp: "Eptesicus diminutus", fam: "vesper", guild: "Insetívoro", local: "Corredor Ecológico Sul" },
-
-        // Margem Estuarina e Baía da Babitonga (Noctilionidae)
         { lat: -26.2480, lng: -48.7420, sp: "Noctilio leporinus", fam: "nocti", guild: "Piscívoro", local: "Canal da Vigorelli / Baía da Babitonga" },
         { lat: -26.2780, lng: -48.7300, sp: "Noctilio leporinus", fam: "nocti", guild: "Piscívoro", local: "Manguezais dos Espinheiros" }
       ];
