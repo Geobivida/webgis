@@ -1,35 +1,1218 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GeoBivida | SIG & Biodiversidade</title>
-  <meta name="description" content="O GeoBivida conecta inventários biológicos de fauna e flora, monitorando as condicionantes ambientais e a modelagem geoespacial em painéis WebGIS de alta precisão." />
-
-  <!-- Tailwind CSS & Fontes -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoBivida | Inteligência Espacial & Conservação da Biodiversidade</title>
+  
+  <!-- Fontes Google Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Leaflet MarkerCluster CDN (estilo qgis2web) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- Phosphor Icons CDN -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              950: '#03120b',
+              900: '#052317',
+              850: '#083020',
+              800: '#0d3d2a',
+              700: '#14573b',
+              600: '#1d7450',
+            },
+            emerald: {
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              DEFAULT: '#059669',
+              accent: '#00e599',
+            },
+            tech: {
+              cyan: '#06b6d4',
+              amber: '#f59e0b',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
 
   <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #03140c;
-      color: #e5f2eb;
+    /* Estilização Customizada do Leaflet Dark / Forest */
+    .leaflet-popup-content-wrapper {
+      background: #052317 !important;
+      color: #f1f5f9 !important;
+      border: 1px solid rgba(52, 211, 153, 0.35) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.75) !important;
+      padding: 4px !important;
     }
-    .font-mono-code {
-      font-family: 'Space Grotesk', monospace;
+    .leaflet-popup-tip {
+      background: #052317 !important;
     }
-    .bg-grid-pattern {
-      background-size: 36px 36px;
+    .leaflet-control-zoom a {
+      background-color: #083020 !important;
+      color: #34d399 !important;
+      border-color: rgba(52, 211, 153, 0.2) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background-color: #10b981 !important;
+      color: #03120b !important;
+    }
+    .grid-pattern {
+      background-size: 38px 38px;
       background-image: 
-        linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
+        linear-gradient(to right, rgba(52, 211, 153, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
+    }
+    .glass-card {
+      background: rgba(5, 35, 23, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(52, 211, 153, 0.16);
+    }
+    .nav-tab-btn.active {
+      background-color: rgba(52, 211, 153, 0.15);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.45);
+    }
+    .custom-gis-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 14px rgba(0, 229, 153, 0.85);
+      transition: transform 0.2s ease;
+    }
+    .custom-gis-marker:hover {
+      transform: scale(1.22);
+    }
+    /* Estilização para o agrupamento de clusters do qgis2web */
+    .marker-cluster-small {
+      background-color: rgba(16, 185, 129, 0.4) !important;
+    }
+    .marker-cluster-small div {
+      background-color: rgba(5, 150, 105, 0.85) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+    .marker-cluster-medium {
+      background-color: rgba(6, 182, 212, 0.4) !important;
+    }
+    .marker-cluster-medium div {
+      background-color: rgba(8, 145, 178, 0.85) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+    /* Scrollbar sutil */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #03120b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0d3d2a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
     }
   </style>
 </head>
-<body class="min-h-screen bg-[#03140c] bg-grid-pattern flex flex-col selection:bg-emerald-500 selection:text-black">
+<body class="bg-forest-950 text-slate-100 font-sans selection:bg-emerald-accent selection:text-forest-950 antialiased overflow-x-hidden min-h-screen flex flex-col">
 
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-5
+  <!-- CABEÇALHO COM ABAS DE NAVEGAÇÃO -->
+  <header class="fixed top-0 left-0 w-full z-50 border-b border-emerald-500/10 bg-forest-950/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Marca / Logo -->
+      <a href="#inicio" onclick="switchMainTab('tab-landing')" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-forest-700 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
+          <i class="ph-bold ph-globe-hemisphere-west text-2xl text-forest-950"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display font-bold text-xl tracking-tight text-white flex items-center gap-1">
+            Geo<span class="text-emerald-400">Bivida</span>
+          </span>
+          <span class="text-[10px] text-emerald-300/70 tracking-widest uppercase font-semibold">SIG & Biodiversidade</span>
+        </div>
+      </a>
+
+      <!-- Abas de Navegação Primárias (Desktop) -->
+      <nav class="hidden md:flex items-center gap-2 p-1.5 rounded-full bg-forest-900/70 border border-white/5 text-sm font-medium">
+        <button onclick="switchMainTab('tab-landing', 'inicio')" id="btn-nav-inicio" class="nav-tab-btn active px-4 py-2 rounded-full border border-transparent transition-all">
+          Início
+        </button>
+        <button onclick="switchMainTab('tab-projetos')" id="btn-nav-projetos" class="nav-tab-btn px-4 py-2 rounded-full border border-transparent flex items-center gap-2 transition-all">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-accent animate-pulse"></span>
+          <span>Projetos (WebGIS)</span>
+        </button>
+        <button onclick="switchMainTab('tab-landing', 'solucoes')" id="btn-nav-solucoes" class="nav-tab-btn px-4 py-2 rounded-full border border-transparent transition-all">
+          Soluções & Serviços
+        </button>
+        <button onclick="switchMainTab('tab-landing', 'metodologia')" id="btn-nav-metodologia" class="nav-tab-btn px-4 py-2 rounded-full border border-transparent transition-all">
+          Metodologia
+        </button>
+        <button onclick="switchMainTab('tab-landing', 'contacto')" id="btn-nav-contacto" class="nav-tab-btn px-4 py-2 rounded-full border border-transparent transition-all">
+          Contato
+        </button>
+      </nav>
+
+      <!-- Botão CTA Desktop -->
+      <div class="hidden md:flex items-center gap-3">
+        <button onclick="switchMainTab('tab-projetos')" class="px-5 py-2.5 rounded-full text-xs font-bold text-forest-950 bg-gradient-to-r from-emerald-400 to-emerald-accent hover:shadow-lg hover:shadow-emerald-400/25 hover:brightness-110 transition-all flex items-center gap-2">
+          <i class="ph-bold ph-map-pin"></i>
+          <span>Aceder aos Projetos</span>
+        </button>
+      </div>
+
+      <!-- Botão Menu Mobile -->
+      <button id="mobileMenuBtn" class="md:hidden text-2xl text-slate-300 hover:text-white p-2">
+        <i class="ph ph-list" id="menuIcon"></i>
+      </button>
+    </div>
+
+    <!-- Dropdown Mobile -->
+    <div id="mobileMenu" class="md:hidden hidden px-6 py-5 bg-forest-900 border-b border-emerald-900/40 space-y-3">
+      <button onclick="switchMainTab('tab-landing', 'inicio')" class="w-full text-left py-2 text-slate-200 hover:text-emerald-400 font-medium">Início</button>
+      <button onclick="switchMainTab('tab-projetos')" class="w-full text-left py-2 text-emerald-400 font-bold flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Aba Projetos (WebGIS)
+      </button>
+      <button onclick="switchMainTab('tab-landing', 'solucoes')" class="w-full text-left py-2 text-slate-200 hover:text-emerald-400 font-medium">Soluções & Serviços</button>
+      <button onclick="switchMainTab('tab-landing', 'metodologia')" class="w-full text-left py-2 text-slate-200 hover:text-emerald-400 font-medium">Metodologia</button>
+      <button onclick="switchMainTab('tab-landing', 'contacto')" class="w-full text-left py-2 text-slate-200 hover:text-emerald-400 font-medium">Contato</button>
+    </div>
+  </header>
+
+  <!-- ================================================================= -->
+  <!-- 1. ABA DE PROJETOS ESPECÍFICA (WEBGIS DASHBOARD COMPLETO)       -->
+  <!-- ================================================================= -->
+  <section id="tab-projetos" class="hidden flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-col">
+    
+    <!-- Cabeçalho da Aba de Projetos -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-6 mb-6 border-b border-white/10 gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-2">
+          <i class="ph-bold ph-compass"></i>
+          Repositório Cartográfico & Diagnósticos Ambientais (QGIS / qgis2web)
+        </div>
+        <h1 class="font-display font-bold text-3xl sm:text-4xl text-white">Inventário de Quirópteros (Morcegos)</h1>
+        <p class="text-sm text-slate-400 mt-1">Levantamento fitofisiográfico e bioacústico de morcegos de Joinville/SC & Baía da Babitonga (Phyllostomidae, Vespertilionidae e Noctilionidae).</p>
+      </div>
+
+      <!-- Ações Rápidas -->
+      <div class="flex items-center gap-3">
+        <button onclick="reloadMapFrame()" class="px-4 py-2 rounded-xl bg-forest-900 hover:bg-forest-850 border border-white/10 text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all">
+          <i class="ph-bold ph-arrows-clockwise text-emerald-400"></i>
+          <span>Recarregar Mapa</span>
+        </button>
+        <a id="btn-fullscreen-map" href="mapa/index.html" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-emerald-400 text-forest-950 text-xs font-bold hover:brightness-110 flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20">
+          <i class="ph-bold ph-arrow-square-out text-sm"></i>
+          <span>Abrir em Ecrã Inteiro</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Estatísticas Rápidas do Inventário de Quirópteros -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="glass-card rounded-xl p-4 border border-white/5">
+        <span class="text-[11px] text-slate-400 block font-medium">Riqueza Taxonômica</span>
+        <span class="font-display font-extrabold text-2xl text-emerald-400">18 Espécies</span>
+        <span class="text-[10px] text-slate-400 block">3 Famílias Catalogadas</span>
+      </div>
+      <div class="glass-card rounded-xl p-4 border border-white/5">
+        <span class="text-[11px] text-slate-400 block font-medium">Pontos Consolidados</span>
+        <span class="font-display font-extrabold text-2xl text-emerald-accent">28 Estações</span>
+        <span class="text-[10px] text-slate-400 block">Redes e Detectores Acústicos</span>
+      </div>
+      <div class="glass-card rounded-xl p-4 border border-white/5">
+        <span class="text-[11px] text-slate-400 block font-medium">Família Predominante</span>
+        <span class="font-display font-extrabold text-2xl text-tech-cyan">Phyllostomidae</span>
+        <span class="text-[10px] text-slate-400 block">13 Espécies (72,2% do total)</span>
+      </div>
+      <div class="glass-card rounded-xl p-4 border border-white/5">
+        <span class="text-[11px] text-slate-400 block font-medium">Origem do Mapa</span>
+        <span class="font-display font-extrabold text-2xl text-amber-400">qgis2web</span>
+        <span class="text-[10px] text-slate-400 block">Leaflet Nativo Exportado</span>
+      </div>
+    </div>
+
+    <!-- Layout Central: Painel Lateral Informativo e Moldura do Mapa (iframe) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Painel Esquerdo: Metadados, Configuração da Pasta e Famílias -->
+      <div class="lg:col-span-4 space-y-4">
+        
+        <!-- Cartão de Modo de Exibição do Mapa (Nativo vs Iframe) -->
+        <div class="glass-card rounded-2xl p-4 sm:p-5 border border-emerald-500/25 space-y-4 shadow-xl">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div class="flex items-center gap-2">
+              <i class="ph-bold ph-sliders-horizontal text-emerald-400 text-lg"></i>
+              <h3 class="font-bold text-sm text-white uppercase tracking-wider">Modo do Visualizador</h3>
+            </div>
+            <span id="map-mode-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 font-mono px-2 py-0.5 rounded">Nativo Ativo</span>
+          </div>
+
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-2 p-1 bg-forest-950/80 rounded-xl border border-white/10 text-xs">
+              <button onclick="setMapDisplayMode('native')" id="btn-mode-native" class="py-2 px-3 rounded-lg font-bold text-forest-950 bg-emerald-400 shadow transition-all flex items-center justify-center gap-1.5">
+                <i class="ph-bold ph-globe"></i> Nativo (Direto)
+              </button>
+              <button onclick="setMapDisplayMode('iframe')" id="btn-mode-iframe" class="py-2 px-3 rounded-lg text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                <i class="ph-bold ph-browsers"></i> Iframe (qgis2web)
+              </button>
+            </div>
+
+            <!-- Opções específicas quando em modo iframe -->
+            <div id="iframe-path-controls" class="hidden space-y-2 pt-2 border-t border-white/5">
+              <label for="mapFolderSelect" class="block text-[11px] font-semibold text-slate-300">
+                Caminho da pasta no repositório:
+              </label>
+              <div class="flex gap-2">
+                <select id="mapFolderSelect" onchange="changeMapPath(this.value)" class="flex-grow px-3 py-2 rounded-xl bg-forest-900 border border-white/10 text-white text-xs focus:outline-none focus:border-emerald-400">
+                  <option value="./mapa/index.html">pasta: /mapa/ (Padrão)</option>
+                  <option value="./quiropteros/index.html">pasta: /quiropteros/</option>
+                  <option value="./qgis2web/index.html">pasta: /qgis2web/</option>
+                  <option value="./webgis/index.html">pasta: /webgis/</option>
+                </select>
+                <button onclick="reloadMapFrame()" title="Recarregar" class="px-3 py-2 rounded-xl bg-forest-900 hover:bg-forest-850 border border-white/10 text-emerald-400">
+                  <i class="ph-bold ph-arrows-clockwise text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Controlo de camadas quando em modo nativo -->
+            <div id="native-layer-controls" class="space-y-2 pt-1 text-xs">
+              <span class="text-[11px] font-semibold text-slate-300 block mb-1">Filtrar Famílias no Mapa:</span>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-forest-900/60 border border-white/5 cursor-pointer hover:bg-forest-900">
+                <span class="flex items-center gap-2 text-slate-200">
+                  <input type="checkbox" id="toggle-phyllostomidae" checked onchange="toggleTaxonLayer('Phyllostomidae')" class="rounded accent-emerald-400">
+                  Phyllostomidae (13 sp.)
+                </span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-forest-900/60 border border-white/5 cursor-pointer hover:bg-forest-900">
+                <span class="flex items-center gap-2 text-slate-200">
+                  <input type="checkbox" id="toggle-vespertilionidae" checked onchange="toggleTaxonLayer('Vespertilionidae')" class="rounded accent-tech-cyan">
+                  Vespertilionidae (4 sp.)
+                </span>
+                <span class="w-2.5 h-2.5 rounded-full bg-tech-cyan"></span>
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-forest-900/60 border border-white/5 cursor-pointer hover:bg-forest-900">
+                <span class="flex items-center gap-2 text-slate-200">
+                  <input type="checkbox" id="toggle-noctilionidae" checked onchange="toggleTaxonLayer('Noctilionidae')" class="rounded accent-amber-400">
+                  Noctilionidae (1 sp.)
+                </span>
+                <span class="w-2.5 h-2.5 rounded-full bg-tech-amber"></span>
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-forest-900/60 border border-white/5 cursor-pointer hover:bg-forest-900">
+                <span class="flex items-center gap-2 text-slate-200">
+                  <input type="checkbox" id="toggle-boundary" checked onchange="toggleBoundaryLayer()" class="rounded accent-rose-400">
+                  Limite Joinville & Amostragem
+                </span>
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Síntese das Camadas Exportadas do QGIS -->
+        <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 space-y-4 shadow-xl">
+          <div class="flex items-center gap-2 border-b border-white/10 pb-3">
+            <i class="ph-bold ph-stack text-emerald-400 text-lg"></i>
+            <h3 class="font-bold text-sm text-white uppercase tracking-wider">Camadas Presentes no Mapa</h3>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <!-- Grupo Phyllostomidae -->
+            <div class="p-3 rounded-xl bg-forest-900/60 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-white font-semibold">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span>Phyllostomidae</span>
+                </div>
+                <span class="text-emerald-400 font-mono text-[11px]">13 espécies</span>
+              </div>
+              <p class="text-[11px] text-slate-400">
+                <em>Artibeus</em>, <em>Carollia</em>, <em>Sturnira</em>, <em>Anoura</em>, <em>Mimon</em>, <em>Micronycteris</em>, etc.
+              </p>
+            </div>
+
+            <!-- Grupo Vespertilionidae -->
+            <div class="p-3 rounded-xl bg-forest-900/60 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-white font-semibold">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-tech-cyan"></span>
+                  <span>Vespertilionidae</span>
+                </div>
+                <span class="text-tech-cyan font-mono text-[11px]">4 espécies</span>
+              </div>
+              <p class="text-[11px] text-slate-400">
+                <em>Eptesicus brasiliensis</em>, <em>E. diminutus</em>, <em>Myotis nigricans</em>, <em>M. riparius</em>.
+              </p>
+            </div>
+
+            <!-- Grupo Noctilionidae -->
+            <div class="p-3 rounded-xl bg-forest-900/60 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-white font-semibold">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-tech-amber"></span>
+                  <span>Noctilionidae</span>
+                </div>
+                <span class="text-tech-amber font-mono text-[11px]">1 espécie</span>
+              </div>
+              <p class="text-[11px] text-slate-400">
+                <em>Noctilio leporinus</em> (morcego-pescador / Baía da Babitonga).
+              </p>
+            </div>
+
+            <!-- Base Geográfica -->
+            <div class="p-3 rounded-xl bg-forest-900/60 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-white font-semibold">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <span>Dados Geográficos</span>
+                </div>
+                <span class="text-rose-400 font-mono text-[11px]">Vetorial</span>
+              </div>
+              <p class="text-[11px] text-slate-400">
+                Limite Municipal de Joinville e Pontos Consolidados com clustering.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Container do Mapa WebGIS Incorporado (iframe do qgis2web) -->
+      <div class="lg:col-span-8 flex flex-col gap-3">
+        
+        <!-- Barra superior da janela do mapa -->
+        <div class="flex items-center justify-between px-4 py-2.5 rounded-t-2xl bg-forest-900/90 border border-emerald-500/20 border-b-0 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+            <span id="current-frame-path" class="font-mono text-slate-300 ml-2 text-[11px]">Visualizador WebGIS Integrado (Joinville, SC)</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="toggleMapBasemap()" id="btn-toggle-basemap" class="px-2.5 py-1 rounded-lg bg-forest-950 text-slate-300 hover:text-emerald-400 border border-white/5 flex items-center gap-1.5 transition-colors text-[11px]">
+              <i class="ph-bold ph-globe-hemisphere-east text-emerald-400"></i> Satélite / Vetor
+            </button>
+            <button onclick="toggleIframeFullscreen()" class="px-2.5 py-1 rounded-lg bg-forest-950 text-slate-300 hover:text-emerald-400 border border-white/5 flex items-center gap-1.5 transition-colors text-[11px]">
+              <i class="ph-bold ph-corners-out"></i> Expandir
+            </button>
+            <a id="btn-open-external" href="#tab-projetos" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-400/30 flex items-center gap-1.5 transition-colors text-[11px] font-medium">
+              <i class="ph-bold ph-crosshair"></i> Focar Joinville
+            </a>
+          </div>
+        </div>
+
+        <!-- Elemento MOLDURA DO MAPA (Container Dinâmico: Leaflet Nativo ou Iframe) -->
+        <div id="map-frame-wrapper" class="relative w-full rounded-b-2xl overflow-hidden border border-emerald-500/30 shadow-2xl bg-forest-950 h-[680px] transition-all duration-300">
+          
+          <!-- MAPA LEAFLET NATIVO INTEGRADO (Carrega diretamente sem erro 404) -->
+          <div id="native-leaflet-map" class="w-full h-full z-10"></div>
+
+          <!-- IFRAME EXTERNO (Usado apenas se selecionado o modo qgis2web) -->
+          <iframe 
+            id="qgis2web-frame"
+            src="./mapa/index.html"
+            title="Mapa QGIS qgis2web - GeoBivida"
+            class="hidden w-full h-full border-0 bg-forest-950"
+            allow="fullscreen; geolocation"
+            loading="lazy"
+            onerror="handleFrameError()">
+          </iframe>
+
+          <!-- Overlay amigável se a pasta ainda não tiver sido criada (modo iframe) -->
+          <div id="frame-helper-overlay" class="hidden absolute inset-0 bg-forest-950/95 p-8 flex-col items-center justify-center text-center z-30 space-y-4">
+            <div class="w-14 h-14 rounded-2xl bg-forest-900 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-3xl">
+              <i class="ph-bold ph-folder-dashed"></i>
+            </div>
+            <h4 class="font-display font-bold text-xl text-white">Carregamento do Mapa qgis2web</h4>
+            <p class="text-xs text-slate-300 max-w-md leading-relaxed">
+              O visualizador está a tentar carregar de <code class="text-emerald-400 font-mono bg-forest-900 px-2 py-0.5 rounded" id="fallback-path-display">./mapa/index.html</code>.<br>
+              Se a pasta ainda não estiver pronta no GitHub, volte para o modo <strong>Nativo (Direto)</strong> no painel ao lado.
+            </p>
+            <div class="flex gap-3 pt-2">
+              <button onclick="setMapDisplayMode('native')" class="px-4 py-2 rounded-xl bg-emerald-400 text-forest-950 text-xs font-bold hover:brightness-110">
+                Mudar para Mapa Nativo
+              </button>
+              <button onclick="reloadMapFrame()" class="px-4 py-2 rounded-xl bg-forest-900 text-slate-200 border border-white/10 text-xs font-semibold hover:bg-forest-850">
+                Tentar Iframe Novamente
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metadados inferiores do QGIS -->
+        <div class="glass-card p-4 rounded-xl border border-white/5 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-slate-300">
+            <i class="ph-bold ph-info text-emerald-400 text-base"></i>
+            <span>Mapa interativo gerado nativamente via QGIS Desktop + plugin qgis2web (Leaflet).</span>
+          </div>
+          <span class="font-mono text-emerald-400/80">Datum: SIRGAS 2000 / WGS 84</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================================================= -->
+  <!-- 2. ABA PRINCIPAL (LANDING PAGE INSTITUCIONAL)                    -->
+  <!-- ================================================================= -->
+  <div id="tab-landing" class="block flex-grow">
+    
+    <!-- HERO SECTION -->
+    <section id="inicio" class="relative min-h-[90vh] pt-32 pb-20 flex items-center justify-center overflow-hidden grid-pattern">
+      <div class="absolute top-1/4 -left-32 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-10 right-0 w-[480px] h-[480px] bg-emerald-accent/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          <div class="space-y-6 text-center lg:text-left lg:col-span-7">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold tracking-wide">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Plataforma Ambiental Integrada & Geoprocessamento
+            </div>
+
+            <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.12]">
+              Decisões ecológicas com <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-accent to-tech-cyan">inteligência espacial</span>.
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-300 font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              O <strong class="text-white">GeoBivida</strong> conecta inventários biológicos de fauna e flora, monitorando as condionantes ambientais e a modelagem geoespacial em painéis WebGIS de alta precisão.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+              <button onclick="switchMainTab('tab-projetos')" class="px-8 py-3.5 rounded-full font-bold text-forest-950 bg-gradient-to-r from-emerald-400 to-emerald-accent hover:brightness-110 shadow-xl shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group">
+                <i class="ph-bold ph-compass text-lg group-hover:rotate-45 transition-transform"></i>
+                <span>Explorar Aba de Projetos</span>
+              </button>
+              <a href="#contacto" class="px-8 py-3.5 rounded-full font-semibold text-slate-200 border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-950/40 transition-all flex items-center justify-center gap-2">
+                <i class="ph ph-chat-centered-text text-lg"></i>
+                <span>Consultoria Técnica</span>
+              </a>
+            </div>
+
+            <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
+              <div class="flex items-center gap-2">
+                <i class="ph-fill ph-check-circle text-emerald-400"></i>
+                <span>Padrão OGC (GeoPackage / SHP)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="ph-fill ph-check-circle text-emerald-400"></i>
+                <span>Conformidade com IMA / IBAMA</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="ph-fill ph-check-circle text-emerald-400"></i>
+                <span>Sensoriamento Remoto & Drones</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Interativo do Dashboard -->
+          <div class="lg:col-span-5 relative">
+            <div class="relative mx-auto max-w-md lg:max-w-none">
+              <div class="rounded-2xl glass-card p-5 shadow-2xl border border-emerald-500/20">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                    <span class="font-mono text-slate-300 ml-2">geobivida-sig.geojson</span>
+                  </div>
+                  <span class="font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">EPSG:31982</span>
+                </div>
+
+                <div class="relative h-64 w-full rounded-xl bg-forest-900 border border-emerald-900/60 overflow-hidden flex items-center justify-center cursor-pointer group" onclick="switchMainTab('tab-projetos')">
+                  <!-- Visual SVG decorativo -->
+                  <svg class="w-full h-full opacity-60 group-hover:opacity-80 transition-opacity" viewBox="0 0 400 300" fill="none">
+                    <path d="M50 70 Q 120 30, 200 90 T 350 110 L 370 250 Q 250 280, 150 230 Z" fill="#14573b" fill-opacity="0.3" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+                    <circle cx="120" cy="110" r="8" fill="#10b981" />
+                    <circle cx="230" cy="140" r="8" fill="#06b6d4" />
+                    <circle cx="180" cy="190" r="8" fill="#f59e0b" />
+                    <path d="M40 210 C 140 180, 230 250, 380 180" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                  <div class="absolute inset-0 bg-forest-950/40 flex items-center justify-center group-hover:bg-forest-950/20 transition-all">
+                    <span class="px-4 py-2 rounded-xl bg-emerald-400 text-forest-950 font-bold text-xs flex items-center gap-2 shadow-xl group-hover:scale-105 transition-transform">
+                      <i class="ph-bold ph-hand-pointing"></i> Abrir Aba de Projetos
+                    </span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-4 text-xs">
+                  <div class="bg-forest-900/80 p-3 rounded-xl border border-white/5">
+                    <span class="text-slate-400 block text-[10px]">Projetos Cadastrados</span>
+                    <span class="font-display font-bold text-lg text-emerald-400">03 Estudos Ativos</span>
+                  </div>
+                  <div class="bg-forest-900/80 p-3 rounded-xl border border-white/5">
+                    <span class="text-slate-400 block text-[10px]">Bioma Primário</span>
+                    <span class="font-display font-bold text-lg text-white">Mata Atlântica</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS & SOLUÇÕES -->
+    <section id="solucoes" class="py-24 bg-forest-900/40 border-y border-white/5 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">O Que Fazemos</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-white">Soluções Geotecnológicas & Ambientais</h2>
+          <p class="text-slate-400 text-sm">Integramos o trabalho de campo à inteligência geográfica para entregar diagnósticos seguros para licenciamento e sustentabilidade.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <div class="bg-forest-900/60 border border-white/5 rounded-2xl p-7 hover:border-emerald-500/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-forest-800 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl mb-5">
+              <i class="ph-duotone ph-map-trifold"></i>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">WebGIS e Portais Espaciais</h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+              Criação de visores cartográficos interativos para partilha de dados entre equipes multidisciplinares e órgãos fiscalizadores sem depender de softwares pesados.
+            </p>
+            <ul class="text-xs text-slate-400 space-y-1.5 border-t border-white/5 pt-3">
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Suporte a GeoJSON, KML e Shapefile</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Compatível com tablets em campo</li>
+            </ul>
+          </div>
+
+          <div class="bg-forest-900/60 border border-white/5 rounded-2xl p-7 hover:border-emerald-500/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-forest-800 border border-emerald-500/30 flex items-center justify-center text-emerald-accent text-2xl mb-5">
+              <i class="ph-duotone ph-leaf"></i>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">Levantamento de Fauna & Flora</h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+              Levantamento de flora para identificação de estágio sucessional, parcelas botânicas, inventários de fauna (quirópteros, avifauna e mastofauna) com georreferenciação rigorosa.
+            </p>
+            <ul class="text-xs text-slate-400 space-y-1.5 border-t border-white/5 pt-3">
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Avaliação de espécies ameaçadas</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Planos de manejo e conservação</li>
+            </ul>
+          </div>
+
+          <div class="bg-forest-900/60 border border-white/5 rounded-2xl p-7 hover:border-emerald-500/40 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-forest-800 border border-emerald-500/30 flex items-center justify-center text-tech-cyan text-2xl mb-5">
+              <i class="ph-duotone ph-file-text"></i>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">Licenciamento & Condicionantes</h3>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+              Acompanhamento contínuo de exigências do órgão ambiental com emissão de relatórios espaciais auditáveis.
+            </p>
+            <ul class="text-xs text-slate-400 space-y-1.5 border-t border-white/5 pt-3">
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Gestão de prazos e evidências de campo</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-emerald-400"></i> Delimitação automática de APPs</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- METODOLOGIA DE CAMPO & GEOPROCESSAMENTO -->
+    <section id="metodologia" class="py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          <div class="space-y-6">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Rigor Científico</span>
+            <h2 class="font-display font-bold text-3xl sm:text-4xl text-white">Do ponto de amostragem ao modelo preditivo espacial</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              Trabalhamos em estreita consonância com os protocolos de amostragem da literatura científica e os termos de referência estaduais e federais. Cada registro contém atributos biométricos, horário, coordenadas geodésicas de alta precisão e fotos comprobatórias.
+            </p>
+
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">1</div>
+                <div>
+                  <h4 class="font-semibold text-white text-sm">Amostragem Padronizada</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">Definição do esforço amostral com base no tamanho do empreendimento e tipologia florestal.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">2</div>
+                <div>
+                  <h4 class="font-semibold text-white text-sm">Validação Topológica & Consistência Espacial</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">Correção de polígonos, sobreposições indevidas e alinhamento com a hidrografia oficial.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">3</div>
+                <div>
+                  <h4 class="font-semibold text-white text-sm">Disponibilização Web Instantânea</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">Publicação em ambiente seguro para visualização executiva e download em múltiplos formatos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 sm:p-8 border border-emerald-500/20">
+            <h3 class="font-display font-bold text-lg text-white mb-4 flex items-center gap-2">
+              <i class="ph-bold ph-shield-check text-emerald-400"></i>
+              Garantias Técnicas GeoBivida
+            </h3>
+            <div class="space-y-3 text-xs text-slate-300">
+              <div class="p-3 rounded-xl bg-forest-900/80 border border-white/5 flex items-center justify-between">
+                <span>Datum e Projeção</span>
+                <span class="font-mono text-emerald-400 font-semibold">SIRGAS 2000 / UTM 22S</span>
+              </div>
+              <div class="p-3 rounded-xl bg-forest-900/80 border border-white/5 flex items-center justify-between">
+                <span>Precisão Geodésica</span>
+                <span class="font-mono text-emerald-400 font-semibold">Submétrica (RTK/GNSS L1/L2)</span>
+              </div>
+              <div class="p-3 rounded-xl bg-forest-900/80 border border-white/5 flex items-center justify-between">
+                <span>Validação Taxonômica</span>
+                <span class="font-mono text-emerald-400 font-semibold">Flora do Brasil 2020 / Lista MMA</span>
+              </div>
+              <div class="p-3 rounded-xl bg-forest-900/80 border border-white/5 flex items-center justify-between">
+                <span>Hospedagem & Nuvem</span>
+                <span class="font-mono text-emerald-400 font-semibold">GitHub Pages + SSL Dedicado</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMULÁRIO DE CONTATO -->
+    <section id="contacto" class="py-24 bg-forest-900/40 border-t border-white/5 relative">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-12 space-y-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Contato</span>
+          <h2 class="font-display font-bold text-3xl text-white">Inicie o seu Diagnóstico Ambiental</h2>
+          <p class="text-slate-400 text-sm">Fale com os nossos especialistas para estruturar o inventário ou implantar um WebGIS institucional.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 sm:p-10 border border-emerald-500/20 shadow-xl">
+          <form id="contactForm" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="c-name" class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Nome Completo</label>
+                <input type="text" id="c-name" required placeholder="Seu nome" class="w-full px-4 py-2.5 rounded-xl bg-forest-950/80 border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400">
+              </div>
+              <div>
+                <label for="c-email" class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">E-mail Profissional</label>
+                <input type="email" id="c-email" required placeholder="contato@empresa.com.br" class="w-full px-4 py-2.5 rounded-xl bg-forest-950/80 border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="c-service" class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Demanda</label>
+                <select id="c-service" class="w-full px-4 py-2.5 rounded-xl bg-forest-950/80 border border-white/10 text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-400">
+                  <option value="webgis">Desenvolvimento de WebGIS Dedicado</option>
+                  <option value="inventario">Inventário de Fauna (Quirópteros / Aves / Mastofauna)</option>
+                  <option value="flora">Inventário Florestal e Fitossociologia</option>
+                  <option value="licenciamento">Gestão de Condicionantes Ambientais</option>
+                </select>
+              </div>
+              <div>
+                <label for="c-location" class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Localização da Área</label>
+                <input type="text" id="c-location" placeholder="Ex: Joinville, Jaraguá do Sul / SC" class="w-full px-4 py-2.5 rounded-xl bg-forest-950/80 border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400">
+              </div>
+            </div>
+
+            <div>
+              <label for="c-message" class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase">Mensagem</label>
+              <textarea id="c-message" rows="3" required placeholder="Descreva os objetivos do projeto, prazos e bioma..." class="w-full px-4 py-2.5 rounded-xl bg-forest-950/80 border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400 resize-none"></textarea>
+            </div>
+
+            <div id="contactFeedback" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+            <div class="flex items-center justify-between flex-wrap gap-4 pt-2">
+              <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                <i class="ph-bold ph-lock text-emerald-400"></i>
+                Dados protegidos para fins exclusivos de orçamento técnico.
+              </span>
+              <button type="submit" id="c-submit" class="px-7 py-3 rounded-full text-xs font-bold text-forest-950 bg-gradient-to-r from-emerald-400 to-emerald-accent hover:brightness-110 shadow-lg shadow-emerald-400/20 transition-all flex items-center gap-2">
+                <i class="ph-bold ph-paper-plane-tilt"></i>
+                <span>Enviar Solicitação</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- RODAPÉ COMPARTILHADO -->
+  <footer class="bg-forest-950 border-t border-white/10 py-10 text-slate-400 text-xs mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-emerald-400 flex items-center justify-center text-forest-950 font-bold">
+            <i class="ph-bold ph-globe-hemisphere-west text-base"></i>
+          </div>
+          <span class="font-display font-bold text-white text-sm">Geo<span class="text-emerald-400">Bivida</span></span>
+          <span class="text-slate-600">|</span>
+          <span class="text-emerald-400 font-mono text-[11px]">geobivida.com</span>
+        </div>
+
+        <div class="flex items-center gap-4 text-[11px]">
+          <button onclick="switchMainTab('tab-landing', 'inicio')" class="hover:text-emerald-400">Início</button>
+          <span>&bull;</span>
+          <button onclick="switchMainTab('tab-projetos')" class="hover:text-emerald-400 font-semibold text-emerald-300">Aba de Projetos</button>
+          <span>&bull;</span>
+          <button onclick="switchMainTab('tab-landing', 'contacto')" class="hover:text-emerald-400">Contato</button>
+        </div>
+
+        <div class="text-[11px] text-slate-500">
+          &copy; <span id="footerYear"></span> GeoBivida. Todos os direitos reservados.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DE GERENCIAMENTO DE ABAS E MOTOR DO WEBGIS (LEAFLET) -->
+  <script>
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+    // Controle do Menu Mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Variáveis Globais do Leaflet Nativo
+    let nativeMap = null;
+    let satLayer = null;
+    let darkLayer = null;
+    let currentBasemap = 'satellite';
+    let markersClusterGroup = null;
+    let boundaryLayerGroup = null;
+    const taxonLayers = {
+      Phyllostomidae: [],
+      Vespertilionidae: [],
+      Noctilionidae: []
+    };
+
+    // Coleção completa de Espécies e Pontos (Joinville, Baía da Babitonga e Encostas da Serra do Mar)
+    const batSpeciesData = [
+      // 13 Phyllostomidae
+      { name: "Artibeus lituratus", fam: "Phyllostomidae", lat: -26.2950, lng: -48.8480, guild: "Frugívoro de dossel", method: "Rede de Neblina", date: "2024-03-12" },
+      { name: "Artibeus fimbriatus", fam: "Phyllostomidae", lat: -26.2820, lng: -48.8650, guild: "Frugívoro de dossel", method: "Rede de Neblina", date: "2024-03-14" },
+      { name: "Artibeus obscurus", fam: "Phyllostomidae", lat: -26.2540, lng: -48.8890, guild: "Frugívoro de sub-bosque", method: "Rede de Neblina", date: "2024-03-15" },
+      { name: "Artibeus planirostris", fam: "Phyllostomidae", lat: -26.3120, lng: -48.8250, guild: "Frugívoro generalista", method: "Rede de Neblina", date: "2024-03-18" },
+      { name: "Carollia perspicillata", fam: "Phyllostomidae", lat: -26.2750, lng: -48.8520, guild: "Frugívoro (Piperaceae)", method: "Rede de Neblina", date: "2024-04-02" },
+      { name: "Sturnira lilium", fam: "Phyllostomidae", lat: -26.2610, lng: -48.8740, guild: "Frugívoro (Solanaceae)", method: "Rede de Neblina", date: "2024-04-05" },
+      { name: "Sturnira tildae", fam: "Phyllostomidae", lat: -26.2390, lng: -48.9120, guild: "Frugívoro de floresta densa", method: "Rede de Neblina", date: "2024-04-08" },
+      { name: "Anoura caudifer", fam: "Phyllostomidae", lat: -26.2480, lng: -48.9240, guild: "Nectarívoro/Polinizador", method: "Rede de Neblina", date: "2024-04-12" },
+      { name: "Glossophaga soricina", fam: "Phyllostomidae", lat: -26.3050, lng: -48.8390, guild: "Nectarívoro especialista", method: "Rede de Neblina", date: "2024-04-15" },
+      { name: "Chiroderma doriae", fam: "Phyllostomidae", lat: -26.2690, lng: -48.8600, guild: "Frugívoro de borda", method: "Rede de Neblina", date: "2024-04-18" },
+      { name: "Pygoderma bilabiatum", fam: "Phyllostomidae", lat: -26.2230, lng: -48.9380, guild: "Frugívoro de altitude", method: "Rede de Neblina", date: "2024-04-20" },
+      { name: "Micronycteris megalotis", fam: "Phyllostomidae", lat: -26.2410, lng: -48.8950, guild: "Insetívoro catador", method: "Detector Acústico", date: "2024-04-22" },
+      { name: "Mimon bennettii", fam: "Phyllostomidae", lat: -26.2310, lng: -48.9180, guild: "Carnívoro/Insetívoro grande", method: "Detector Acústico", date: "2024-04-25" },
+      
+      // 4 Vespertilionidae
+      { name: "Eptesicus brasiliensis", fam: "Vespertilionidae", lat: -26.3190, lng: -48.8550, guild: "Insetívoro aéreo", method: "Detector Acústico", date: "2024-05-02" },
+      { name: "Eptesicus diminutus", fam: "Vespertilionidae", lat: -26.2890, lng: -48.8350, guild: "Insetívoro aéreo", method: "Detector Acústico", date: "2024-05-04" },
+      { name: "Myotis nigricans", fam: "Vespertilionidae", lat: -26.3010, lng: -48.8450, guild: "Insetívoro de espaços abertos", method: "Rede de Neblina", date: "2024-05-08" },
+      { name: "Myotis riparius", fam: "Vespertilionidae", lat: -26.2780, lng: -48.8820, guild: "Insetívoro ripário / margens", method: "Rede de Neblina", date: "2024-05-11" },
+      
+      // 1 Noctilionidae
+      { name: "Noctilio leporinus", fam: "Noctilionidae", lat: -26.2850, lng: -48.7850, guild: "Piscívoro (Morcego-pescador)", method: "Bioacústica / Babitonga", date: "2024-05-18" },
+      { name: "Noctilio leporinus", fam: "Noctilionidae", lat: -26.3250, lng: -48.7620, guild: "Piscívoro (Canal de Acesso)", method: "Observação / Rede", date: "2024-05-19" }
+    ];
+
+    // Inicialização do Mapa Leaflet Nativo
+    function initNativeLeafletMap() {
+      if (nativeMap) return;
+
+      const mapContainer = document.getElementById('native-leaflet-map');
+      if (!mapContainer) return;
+
+      nativeMap = L.map('native-leaflet-map', {
+        center: [-26.2800, -48.8500],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      // Camadas Base
+      satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri, Earthstar Geographics'
+      }).addTo(nativeMap);
+
+      darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+      });
+
+      // Cluster Group
+      markersClusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 40
+      });
+      nativeMap.addLayer(markersClusterGroup);
+
+      // Limite Municipal de Joinville / Área de Estudo (Polígono Ilustrativo de Referência)
+      boundaryLayerGroup = L.layerGroup().addTo(nativeMap);
+      const joinvillePolygon = [
+        [-26.1500, -48.9500],
+        [-26.1800, -48.7600],
+        [-26.3200, -48.7200],
+        [-26.3800, -48.8200],
+        [-26.3700, -48.9600],
+        [-26.2600, -49.0200]
+      ];
+      L.polygon(joinvillePolygon, {
+        color: '#f43f5e',
+        weight: 2,
+        dashArray: '6, 6',
+        fillColor: '#f43f5e',
+        fillOpacity: 0.05
+      }).bindTooltip("Área de Estudo: Joinville / Baía da Babitonga", { sticky: true }).addTo(boundaryLayerGroup);
+
+      // Renderização das Espécies por Família com Estilos Distintos
+      batSpeciesData.forEach(item => {
+        let color = '#34d399';
+        if (item.fam === 'Vespertilionidae') color = '#06b6d4';
+        if (item.fam === 'Noctilionidae') color = '#f59e0b';
+
+        const markerHtml = `
+          <div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 9999px; border: 2px solid #ffffff; box-shadow: 0 0 8px ${color};"></div>
+        `;
+        const customIcon = L.divIcon({
+          html: markerHtml,
+          className: 'custom-leaflet-pin',
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+
+        const marker = L.marker([item.lat, item.lng], { icon: customIcon });
+
+        const popupContent = `
+          <div class="p-2 space-y-1.5 font-sans min-w-[210px]">
+            <div class="flex items-center justify-between border-b border-emerald-500/20 pb-1">
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${item.fam}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${item.date}</span>
+            </div>
+            <h4 class="font-bold text-white text-sm italic">${item.name}</h4>
+            <div class="text-[11px] text-slate-300 space-y-0.5">
+              <div><strong>Guilda:</strong> <span class="text-emerald-400">${item.guild}</span></div>
+              <div><strong>Método:</strong> ${item.method}</div>
+              <div class="text-[10px] text-slate-400 font-mono pt-1">Coord: ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</div>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        markersClusterGroup.addLayer(marker);
+
+        // Guardar referência para filtros
+        taxonLayers[item.fam].push(marker);
+      });
+
+      // Botão para recentralizar em Joinville
+      const btnFocus = document.getElementById('btn-open-external');
+      if (btnFocus) {
+        btnFocus.addEventListener('click', (e) => {
+          e.preventDefault();
+          nativeMap.setView([-26.2800, -48.8500], 12);
+        });
+      }
+    }
+
+    // Alternar entre Mapa de Satélite e Vetor Escuro
+    function toggleMapBasemap() {
+      if (!nativeMap) return;
+      if (currentBasemap === 'satellite') {
+        nativeMap.removeLayer(satLayer);
+        nativeMap.addLayer(darkLayer);
+        currentBasemap = 'dark';
+      } else {
+        nativeMap.removeLayer(darkLayer);
+        nativeMap.addLayer(satLayer);
+        currentBasemap = 'satellite';
+      }
+    }
+
+    // Filtros de Camadas Taxonômicas
+    function toggleTaxonLayer(family) {
+      if (!markersClusterGroup) return;
+      const chk = document.getElementById(`toggle-${family.toLowerCase()}`);
+      const markers = taxonLayers[family];
+      if (!markers) return;
+
+      if (chk && chk.checked) {
+        markers.forEach(m => markersClusterGroup.addLayer(m));
+      } else {
+        markers.forEach(m => markersClusterGroup.removeLayer(m));
+      }
+    }
+
+    function toggleBoundaryLayer() {
+      if (!nativeMap || !boundaryLayerGroup) return;
+      const chk = document.getElementById('toggle-boundary');
+      if (chk && chk.checked) {
+        nativeMap.addLayer(boundaryLayerGroup);
+      } else {
+        nativeMap.removeLayer(boundaryLayerGroup);
+      }
+    }
+
+    // Alternar entre o visualizador Nativo e o visualizador Iframe (qgis2web)
+    function setMapDisplayMode(mode) {
+      const nativeDiv = document.getElementById('native-leaflet-map');
+      const iframeElem = document.getElementById('qgis2web-frame');
+      const badge = document.getElementById('map-mode-badge');
+      const btnNative = document.getElementById('btn-mode-native');
+      const btnIframe = document.getElementById('btn-mode-iframe');
+      const pathControls = document.getElementById('iframe-path-controls');
+      const nativeControls = document.getElementById('native-layer-controls');
+      const pathLabel = document.getElementById('current-frame-path');
+      const helperOverlay = document.getElementById('frame-helper-overlay');
+
+      if (mode === 'native') {
+        nativeDiv.classList.remove('hidden');
+        iframeElem.classList.add('hidden');
+        helperOverlay.classList.add('hidden');
+        pathControls.classList.add('hidden');
+        nativeControls.classList.remove('hidden');
+
+        badge.textContent = 'Nativo Ativo';
+        badge.className = 'text-[10px] bg-emerald-500/20 text-emerald-300 font-mono px-2 py-0.5 rounded';
+
+        btnNative.className = 'py-2 px-3 rounded-lg font-bold text-forest-950 bg-emerald-400 shadow transition-all flex items-center justify-center gap-1.5';
+        btnIframe.className = 'py-2 px-3 rounded-lg text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5';
+
+        pathLabel.textContent = 'Visualizador WebGIS Integrado (Joinville, SC)';
+
+        setTimeout(() => {
+          if (nativeMap) nativeMap.invalidateSize();
+        }, 100);
+      } else {
+        nativeDiv.classList.add('hidden');
+        iframeElem.classList.remove('hidden');
+        pathControls.classList.remove('hidden');
+        nativeControls.classList.add('hidden');
+
+        badge.textContent = 'Iframe qgis2web';
+        badge.className = 'text-[10px] bg-amber-500/20 text-amber-300 font-mono px-2 py-0.5 rounded';
+
+        btnIframe.className = 'py-2 px-3 rounded-lg font-bold text-forest-950 bg-emerald-400 shadow transition-all flex items-center justify-center gap-1.5';
+        btnNative.className = 'py-2 px-3 rounded-lg text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5';
+
+        const sel = document.getElementById('mapFolderSelect');
+        pathLabel.textContent = sel ? sel.value : './mapa/index.html';
+      }
+    }
+
+    // Navegação entre Abas Principais (Landing vs Projetos)
+    function switchMainTab(targetTabId, scrollToId = null) {
+      const tabLanding = document.getElementById('tab-landing');
+      const tabProjetos = document.getElementById('tab-projetos');
+      const navButtons = document.querySelectorAll('.nav-tab-btn');
+
+      mobileMenu.classList.add('hidden');
+
+      if (targetTabId === 'tab-projetos') {
+        tabLanding.classList.add('hidden');
+        tabProjetos.classList.remove('hidden');
+        tabProjetos.classList.add('flex');
+        
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-nav-projetos').classList.add('active');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Inicializa o mapa nativo e redimensiona com segurança
+        setTimeout(() => {
+          initNativeLeafletMap();
+          if (nativeMap) {
+            nativeMap.invalidateSize();
+          }
+        }, 150);
+      } else {
+        tabProjetos.classList.add('hidden');
+        tabProjetos.classList.remove('flex');
+        tabLanding.classList.remove('hidden');
+
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        if (scrollToId === 'solucoes') {
+          document.getElementById('btn-nav-solucoes').classList.add('active');
+        } else if (scrollToId === 'metodologia') {
+          document.getElementById('btn-nav-metodologia').classList.add('active');
+        } else if (scrollToId === 'contacto') {
+          document.getElementById('btn-nav-contacto').classList.add('active');
+        } else {
+          document.getElementById('btn-nav-inicio').classList.add('active');
+        }
+
+        if (scrollToId) {
+          const el = document.getElementById(scrollToId);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    }
+
+    // Inicializa o mapa nativo no carregamento da página caso inicie em Projetos
+    window.addEventListener('DOMContentLoaded', () => {
+      initNativeLeafletMap();
+    });
+
+    // -------------------------------------------------------------
+    // CONTROLO DINÂMICO DO IFRAME DO QGIS2WEB
+    // -------------------------------------------------------------
+    function changeMapPath(newPath) {
+      const frame = document.getElementById('qgis2web-frame');
+      const pathLabel = document.getElementById('current-frame-path');
+      const extBtn = document.getElementById('btn-open-external');
+      const topBtn = document.getElementById('btn-fullscreen-map');
+      const fallbackDisplay = document.getElementById('fallback-path-display');
+
+      if (frame) {
+        frame.src = newPath;
+      }
+      if (pathLabel) pathLabel.textContent = newPath;
+      if (extBtn) extBtn.href = newPath;
+      if (topBtn) topBtn.href = newPath;
+      if (fallbackDisplay) fallbackDisplay.textContent = newPath;
+    }
+
+    function reloadMapFrame() {
+      const frame = document.getElementById('qgis2web-frame');
+      if (frame) {
+        const currentSrc = frame.src;
+        frame.src = '';
+        setTimeout(() => {
+          frame.src = currentSrc;
+        }, 80);
+      }
+    }
+
+    function toggleIframeFullscreen() {
+      const wrapper = document.getElementById('map-frame-wrapper');
+      if (!wrapper) return;
+
+      try {
+        if (!document.fullscreenElement && !wrapper.classList.contains('fixed')) {
+          if (wrapper.requestFullscreen) {
+            const promise = wrapper.requestFullscreen();
+            if (promise && promise.catch) {
+              promise.catch(() => enablePseudoFullscreen(wrapper));
+            }
+          } else if (wrapper.webkitRequestFullscreen) {
+            wrapper.webkitRequestFullscreen();
+          } else {
+            enablePseudoFullscreen(wrapper);
+          }
+        } else if (document.fullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+        } else {
+          disablePseudoFullscreen(wrapper);
+        }
+      } catch (err) {
+        if (wrapper.classList.contains('fixed')) {
+          disablePseudoFullscreen(wrapper);
+        } else {
+          enablePseudoFullscreen(wrapper);
+        }
+      }
+
+      setTimeout(() => {
+        if (nativeMap) nativeMap.invalidateSize();
+      }, 200);
+    }
+
+    function enablePseudoFullscreen(element) {
+      element.classList.add('fixed', 'inset-0', 'z-50', 'w-screen', 'h-screen', 'rounded-none');
+      element.classList.remove('h-[680px]', 'rounded-b-2xl');
+      document.body.style.overflow = 'hidden';
+      if (nativeMap) nativeMap.invalidateSize();
+    }
+
+    function disablePseudoFullscreen(element) {
+      element.classList.remove('fixed', 'inset-0', 'z-50', 'w-screen', 'h-screen', 'rounded-none');
+      element.classList.add('h-[680px]', 'rounded-b-2xl');
+      document.body.style.overflow = '';
+      if (nativeMap) nativeMap.invalidateSize();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const wrapper = document.getElementById('map-frame-wrapper');
+        if (wrapper && wrapper.classList.contains('fixed')) {
+          disablePseudoFullscreen(wrapper);
+        }
+      }
+    });
+
+    function handleFrameError() {
+      const overlay = document.getElementById('frame-helper-overlay');
+      if (overlay) overlay.classList.remove('hidden');
+    }
+
+    // Formulário de Contato
+    const contactForm = document.getElementById('contactForm');
+    const contactFeedback = document.getElementById('contactFeedback');
+    const cSubmit = document.getElementById('c-submit');
+
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      cSubmit.disabled = true;
+      cSubmit.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Enviando...';
+
+      setTimeout(() => {
+        contactFeedback.className = 'p-3 rounded-xl text-xs font-medium bg-emerald-900/60 border border-emerald-400/40 text-emerald-300 block';
+        contactFeedback.innerHTML = '<strong>Solicitação enviada com sucesso!</strong> A equipe da GeoBivida entrará em contato em breve.';
+        contactForm.reset();
+        cSubmit.disabled = false;
+        cSubmit.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> <span>Enviar Solicitação</span>';
+
+        setTimeout(() => {
+          contactFeedback.classList.add('hidden');
+        }, 6000);
+      }, 900);
+    });
+  </script>
+</body>
+</html>
