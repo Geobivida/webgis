@@ -6,6 +6,9 @@
   <title>GeoBivida | SIG & Biodiversidade</title>
   <meta name="description" content="O GeoBivida conecta inventários biológicos de fauna e flora, monitorando as condicionantes ambientais e a modelagem geoespacial em painéis WebGIS de alta precisão." />
 
+  <!-- Favicon com o novo símbolo -->
+  <link rel="icon" type="image/jpeg" href="geo-bivida-simbolo-4k.jpg" />
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -56,12 +59,14 @@
   <!-- CABEÇALHO / NAVEGAÇÃO -->
   <header class="sticky top-0 z-50 backdrop-blur-md bg-[#03140c]/90 border-b border-emerald-950/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <a href="#inicio" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-          <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
+      
+      <!-- LOGO GEOBIVIDA -->
+      <a href="#inicio" class="flex items-center gap-3.5 group">
+        <img 
+          src="geo-bivida-simbolo-4k.jpg" 
+          alt="Símbolo GeoBivida" 
+          class="h-12 w-12 object-contain rounded-xl bg-white p-1 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform"
+        />
         <div>
           <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
             Geo<span class="text-emerald-400">Bivida</span>
@@ -70,6 +75,7 @@
         </div>
       </a>
 
+      <!-- Menu de Links -->
       <nav class="flex items-center gap-2 bg-[#062014] p-1.5 rounded-full border border-emerald-900/60 text-sm">
         <a href="#inicio" class="px-5 py-2 rounded-full font-semibold transition bg-emerald-500 text-black shadow-md">
           Início
@@ -82,7 +88,7 @@
           Soluções & Serviços
         </a>
         <a href="#metodologia" class="hidden md:inline-block px-4 py-2 rounded-full text-emerald-200/70 hover:text-white transition">
-          Metodologia
+          Metodologia & Livro
         </a>
         <a href="#contato" class="hidden md:inline-block px-4 py-2 rounded-full text-emerald-200/70 hover:text-white transition">
           Contato
@@ -137,7 +143,7 @@
             </div>
           </div>
 
-          <!-- MOCKUP VETORIAL (Sem os botões/cartões de métricas) -->
+          <!-- MOCKUP VETORIAL -->
           <div class="lg:col-span-5">
             <div class="relative rounded-2xl p-1 bg-gradient-to-b from-emerald-500/30 via-emerald-800/20 to-transparent shadow-2xl">
               <div class="bg-[#051c11] rounded-[15px] p-6 border border-emerald-800/50 space-y-4">
@@ -298,337 +304,4 @@
             </div>
           </div>
 
-          <div id="map-container" class="lg:col-span-8 bg-[#021008] rounded-2xl border border-emerald-900/80 flex flex-col overflow-hidden shadow-2xl relative">
-            
-            <div class="bg-[#051c11] px-4 py-2.5 border-b border-emerald-900/80 flex items-center justify-between z-10">
-              <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
-                <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
-                <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
-                <span class="text-xs font-mono-code text-emerald-300 ml-2">Visualizador WebGIS Integrado (Joinville, SC)</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <button onclick="toggleBasemap()" class="px-3 py-1 rounded-lg bg-emerald-950 hover:bg-emerald-900 border border-emerald-800/60 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
-                  <span id="basemap-label">🗺️ Satélite / Vetor</span>
-                </button>
-                <button onclick="toggleMapFullscreen()" class="px-3 py-1 rounded-lg bg-emerald-950 hover:bg-emerald-900 border border-emerald-800/60 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
-                  <span>⛶ Expandir</span>
-                </button>
-                <button onclick="resetMapView()" class="px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition shadow">
-                  <span>📍 Focar Joinville</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="flex-grow w-full h-[580px] relative bg-[#021008]" id="leaflet-map-element"></div>
-
-            <div class="bg-[#051c11]/90 px-4 py-2 border-t border-emerald-900/60 flex items-center justify-between text-[11px] font-mono-code text-emerald-400/80 z-10">
-              <span>Datum: SIRGAS 2000 / WGS 84</span>
-              <span>Leaflet + MarkerCluster Nativo</span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECÇÃO SOLUÇÕES & SERVIÇOS -->
-    <section id="solucoes" class="py-20 border-t border-emerald-950/80 bg-[#041a10]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <h2 class="text-xs font-mono-code uppercase tracking-widest text-emerald-400 font-bold">Portfólio de Atuação</h2>
-          <h3 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Soluções Geoespaciais para Meio Ambiente</h3>
-          <p class="text-emerald-200/70 text-base">Unindo o rigor técnico de campo a painéis web estruturados para viabilizar projetos sustentáveis.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-[#062417] p-8 rounded-2xl border border-emerald-900/60 hover:border-emerald-500/40 transition">
-            <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/60 flex items-center justify-center text-emerald-400 mb-6">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-            </div>
-            <h4 class="text-xl font-bold text-white mb-3">WebGIS e Portais Espaciais</h4>
-            <p class="text-emerald-200/70 text-sm leading-relaxed">Criação de visores cartográficos interativos para partilha de dados entre equipes multidisciplinares e órgãos fiscalizadores sem depender de softwares pesados.</p>
-          </div>
-
-          <!-- Card 2: Coleta de Dados Bióticos -->
-          <div class="bg-[#062417] p-8 rounded-2xl border border-emerald-900/60 hover:border-emerald-500/40 transition">
-            <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/60 flex items-center justify-center text-emerald-400 mb-6">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-            </div>
-            <h4 class="text-xl font-bold text-white mb-3">Coleta de Dados Bióticos</h4>
-            <p class="text-emerald-200/70 text-sm leading-relaxed">Levantamento de flora para identificação de estágio sucessional, parcelas botânicas, inventários de fauna (quirópteros, avifauna e mastofauna) com georreferenciação rigorosa.</p>
-          </div>
-
-          <div class="bg-[#062417] p-8 rounded-2xl border border-emerald-900/60 hover:border-emerald-500/40 transition">
-            <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/60 flex items-center justify-center text-emerald-400 mb-6">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-            </div>
-            <h4 class="text-xl font-bold text-white mb-3">Licenciamento & Condicionantes</h4>
-            <p class="text-emerald-200/70 text-sm leading-relaxed">Acompanhamento contínuo de exigências do órgão ambiental com emissão de relatórios espaciais auditáveis.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECÇÃO METODOLOGIA -->
-    <section id="metodologia" class="py-20 border-t border-emerald-950/80 bg-[#03140c]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl space-y-4 mb-12">
-          <h2 class="text-xs font-mono-code uppercase tracking-widest text-emerald-400 font-bold">Padrão Metodológico</h2>
-          <h3 class="text-3xl font-extrabold text-white">Rastreabilidade em Cada Ponto Geográfico</h3>
-          <p class="text-emerald-200/70 text-sm leading-relaxed">Cada elemento cadastrado passa por validação topológica, associação a sistemas geodésicos oficiais (SIRGAS 2000) e geração de metadados prontos para fiscalização.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="p-6 rounded-xl bg-[#051c11] border border-emerald-900/60">
-            <span class="text-emerald-400 font-mono-code text-sm font-bold block mb-2">01. Coleta e Calibração</span>
-            <p class="text-xs text-emerald-200/70 leading-relaxed">Amostragem com GNSS geodésico e dispositivos móveis sincronizados com atributos padronizados de espécies e ecossistemas.</p>
-          </div>
-          <div class="p-6 rounded-xl bg-[#051c11] border border-emerald-900/60">
-            <span class="text-emerald-400 font-mono-code text-sm font-bold block mb-2">02. Processamento Espacial</span>
-            <p class="text-xs text-emerald-200/70 leading-relaxed">Estruturação de bancos de dados vetoriais, criação de buffers hidrológicos, áreas de preservação permanente e análises de conectividade.</p>
-          </div>
-          <div class="p-6 rounded-xl bg-[#051c11] border border-emerald-900/60">
-            <span class="text-emerald-400 font-mono-code text-sm font-bold block mb-2">03. Entrega em Nuvem</span>
-            <p class="text-xs text-emerald-200/70 leading-relaxed">Disponibilização em painéis WebGIS leves, sem custos recorrentes de licenças proprietárias e acessíveis por qualquer navegador.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECÇÃO CONTATO -->
-    <section id="contato" class="py-20 border-t border-emerald-950/80 bg-[#041a10]">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <h2 class="text-xs font-mono-code uppercase tracking-widest text-emerald-400 font-bold">Conecte sua Operação</h2>
-        <h3 class="text-3xl font-extrabold text-white">Pronto para estruturar seus dados ambientais?</h3>
-        <p class="text-emerald-200/70 text-base max-w-xl mx-auto">Fale diretamente com os nossos consultores para implementar soluções cartográficas avançadas no seu empreendimento.</p>
-        <div class="pt-4">
-          <a href="mailto:contato@geobivida.com" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base transition shadow-xl shadow-emerald-500/20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-            Falar Conosco: contato@geobivida.com
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="mt-auto border-t border-emerald-950/80 bg-[#020e08] py-8 text-xs text-emerald-400/60">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-white">GeoBivida</span>
-        <span>•</span>
-        <span>Tecnologia & Gestão Ambiental</span>
-      </div>
-      <div class="font-mono-code">
-        Domínio Oficial: <span class="text-emerald-400">geobivida.com</span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- SCRIPT LEAFLET NATIVO -->
-  <script>
-    let map = null;
-    let clusterPhyllo, clusterVesper, clusterNocti;
-    let boundaryLayer;
-    let satLayer, darkLayer;
-    let currentBasemap = 'sat';
-
-    const JOINVILLE_COORDS = [-26.2800, -48.8400];
-
-    function initLeafletMap() {
-      if (map) return;
-
-      map = L.map('leaflet-map-element', {
-        zoomControl: true,
-        attributionControl: false
-      }).setView(JOINVILLE_COORDS, 11);
-
-      satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19
-      }).addTo(map);
-
-      darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd'
-      });
-
-      clusterPhyllo = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        iconCreateFunction: function(cluster) {
-          return L.divIcon({
-            html: '<div class="w-8 h-8 rounded-full bg-emerald-500/80 border-2 border-emerald-300 flex items-center justify-center text-slate-950 font-bold text-xs shadow-lg">' + cluster.getChildCount() + '</div>',
-            className: '',
-            iconSize: L.point(32, 32)
-          });
-        }
-      });
-
-      clusterVesper = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        iconCreateFunction: function(cluster) {
-          return L.divIcon({
-            html: '<div class="w-8 h-8 rounded-full bg-cyan-500/80 border-2 border-cyan-300 flex items-center justify-center text-slate-950 font-bold text-xs shadow-lg">' + cluster.getChildCount() + '</div>',
-            className: '',
-            iconSize: L.point(32, 32)
-          });
-        }
-      });
-
-      clusterNocti = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        iconCreateFunction: function(cluster) {
-          return L.divIcon({
-            html: '<div class="w-8 h-8 rounded-full bg-amber-500/80 border-2 border-amber-300 flex items-center justify-center text-slate-950 font-bold text-xs shadow-lg">' + cluster.getChildCount() + '</div>',
-            className: '',
-            iconSize: L.point(32, 32)
-          });
-        }
-      });
-
-      // Traçado perimetral de Joinville e orla estuarina da Baía da Babitonga
-      const boundaryCoords = [
-        [-26.1100, -48.9100], [-26.1300, -48.8100], [-26.1700, -48.7700],
-        [-26.2100, -48.7400], [-26.2500, -48.7200], [-26.2900, -48.7050],
-        [-26.3300, -48.7300], [-26.3700, -48.7600], [-26.4100, -48.8300],
-        [-26.4300, -48.9100], [-26.3900, -48.9900], [-26.3300, -49.0300],
-        [-26.2400, -49.0600], [-26.1700, -49.0100]
-      ];
-      boundaryLayer = L.polygon(boundaryCoords, {
-        color: '#f43f5e',
-        weight: 2.2,
-        dashArray: '5, 5',
-        fillColor: '#f43f5e',
-        fillOpacity: 0.04
-      }).addTo(map);
-
-      // Estações ajustadas aos núcleos florestais e corredores hídricos
-      const stations = [
-        // Núcleo Pirabeiraba / Zona Industrial Norte
-        { lat: -26.1680, lng: -48.8820, sp: "Anoura caudifer", fam: "phyllo", guild: "Nectarívoro", local: "Pirabeiraba / Estrada Bonita" },
-        { lat: -26.1950, lng: -48.8680, sp: "Chiroderma doriae", fam: "phyllo", guild: "Frugívoro", local: "Distrito Industrial Norte" },
-        { lat: -26.2120, lng: -48.8750, sp: "Sturnira tildae", fam: "phyllo", guild: "Frugívoro", local: "Bacia do Rio Cubatão" },
-        { lat: -26.2200, lng: -48.8500, sp: "Eptesicus brasiliensis", fam: "vesper", guild: "Insetívoro", local: "Transição Dona Francisca" },
-        
-        // Maciço Central / Morro do Finder / Boa Vista
-        { lat: -26.2750, lng: -48.8280, sp: "Artibeus lituratus", fam: "phyllo", guild: "Frugívoro", local: "Morro do Finder" },
-        { lat: -26.2820, lng: -48.8230, sp: "Artibeus fimbriatus", fam: "phyllo", guild: "Frugívoro", local: "Morro do Finder / Saguaçu" },
-        { lat: -26.2940, lng: -48.8340, sp: "Carollia perspicillata", fam: "phyllo", guild: "Frugívoro", local: "Parque Zoobotânico" },
-        { lat: -26.3010, lng: -48.8310, sp: "Sturnira lilium", fam: "phyllo", guild: "Frugívoro", local: "Morro da Boa Vista" },
-        { lat: -26.2880, lng: -48.8410, sp: "Myotis nigricans", fam: "vesper", guild: "Insetívoro Aéreo", local: "Parque Zoobotânico" },
-        { lat: -26.2920, lng: -48.8250, sp: "Glossophaga soricina", fam: "phyllo", guild: "Nectarívoro", local: "Encosta Leste Boa Vista" },
-
-        // Setor Oeste / Bacia do Piraí e Vila Nova
-        { lat: -26.3080, lng: -48.9150, sp: "Micronycteris megalotis", fam: "phyllo", guild: "Insetívoro", local: "Mata Ciliar Vila Nova" },
-        { lat: -26.2850, lng: -48.9320, sp: "Mimon bennettii", fam: "phyllo", guild: "Insetívoro / Carnívoro", local: "Estrada Comprida" },
-        { lat: -26.2620, lng: -48.9100, sp: "Pygoderma bilabiatum", fam: "phyllo", guild: "Frugívoro", local: "Piraí Alto" },
-        { lat: -26.3210, lng: -48.8920, sp: "Myotis riparius", fam: "vesper", guild: "Insetívoro Aéreo", local: "Bacia Hidrográfica do Piraí" },
-
-        // Setor Sul / Bacia do Cachoeira Sul
-        { lat: -26.3380, lng: -48.8450, sp: "Artibeus obscurus", fam: "phyllo", guild: "Frugívoro", local: "Fragmento Florestal Sul" },
-        { lat: -26.3550, lng: -48.8280, sp: "Artibeus planirostris", fam: "phyllo", guild: "Frugívoro", local: "Área de Preservação Sul" },
-        { lat: -26.3450, lng: -48.8600, sp: "Eptesicus diminutus", fam: "vesper", guild: "Insetívoro", local: "Corredor Ecológico Sul" },
-
-        // Margem Estuarina e Baía da Babitonga (Noctilionidae)
-        { lat: -26.2480, lng: -48.7420, sp: "Noctilio leporinus", fam: "nocti", guild: "Piscívoro", local: "Canal da Vigorelli / Baía da Babitonga" },
-        { lat: -26.2780, lng: -48.7300, sp: "Noctilio leporinus", fam: "nocti", guild: "Piscívoro", local: "Manguezais dos Espinheiros" }
-      ];
-
-      stations.forEach(st => {
-        let markerColor = '#34d399';
-        let targetCluster = clusterPhyllo;
-
-        if (st.fam === 'vesper') {
-          markerColor = '#38bdf8';
-          targetCluster = clusterVesper;
-        } else if (st.fam === 'nocti') {
-          markerColor = '#fbbf24';
-          targetCluster = clusterNocti;
-        }
-
-        const marker = L.circleMarker([st.lat, st.lng], {
-          radius: 7,
-          fillColor: markerColor,
-          color: '#ffffff',
-          weight: 1.5,
-          opacity: 1,
-          fillOpacity: 0.95
-        });
-
-        const popupContent = `
-          <div class="p-1 space-y-1">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold block">${st.fam.toUpperCase()}</span>
-            <h4 class="text-sm font-bold text-white italic">${st.sp}</h4>
-            <div class="text-xs text-emerald-100/80 pt-1 border-t border-emerald-900/60">
-              <p><strong>Local:</strong> ${st.local}</p>
-              <p><strong>Guilda:</strong> ${st.guild}</p>
-              <p class="font-mono text-[10px] text-emerald-400 mt-1">Coord: ${st.lat.toFixed(4)}, ${st.lng.toFixed(4)}</p>
-            </div>
-          </div>
-        `;
-        marker.bindPopup(popupContent);
-        targetCluster.addLayer(marker);
-      });
-
-      map.addLayer(clusterPhyllo);
-      map.addLayer(clusterVesper);
-      map.addLayer(clusterNocti);
-    }
-
-    function toggleLayer(type) {
-      if (!map) return;
-      if (type === 'phyllo') {
-        const chk = document.getElementById('chk-phyllo').checked;
-        chk ? map.addLayer(clusterPhyllo) : map.removeLayer(clusterPhyllo);
-      } else if (type === 'vesper') {
-        const chk = document.getElementById('chk-vesper').checked;
-        chk ? map.addLayer(clusterVesper) : map.removeLayer(clusterVesper);
-      } else if (type === 'nocti') {
-        const chk = document.getElementById('chk-nocti').checked;
-        chk ? map.addLayer(clusterNocti) : map.removeLayer(clusterNocti);
-      } else if (type === 'boundary') {
-        const chk = document.getElementById('chk-boundary').checked;
-        chk ? map.addLayer(boundaryLayer) : map.removeLayer(boundaryLayer);
-      }
-    }
-
-    function toggleBasemap() {
-      if (!map) return;
-      if (currentBasemap === 'sat') {
-        map.removeLayer(satLayer);
-        map.addLayer(darkLayer);
-        currentBasemap = 'dark';
-        document.getElementById('basemap-label').innerText = '🛰️ Mudar p/ Satélite';
-      } else {
-        map.removeLayer(darkLayer);
-        map.addLayer(satLayer);
-        currentBasemap = 'sat';
-        document.getElementById('basemap-label').innerText = '🗺️ Mudar p/ Carto Dark';
-      }
-    }
-
-    function resetMapView() {
-      if (!map) return;
-      map.setView(JOINVILLE_COORDS, 11);
-      map.invalidateSize();
-    }
-
-    function toggleMapFullscreen() {
-      const el = document.getElementById('map-container');
-      if (!document.fullscreenElement) {
-        if (el.requestFullscreen) {
-          el.requestFullscreen().catch(() => {});
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initLeafletMap();
-    });
-  </script>
-</body>
-</html>
+          <div id="map-container" class="lg:col-span-8 bg-[#0210
